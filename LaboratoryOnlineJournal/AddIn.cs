@@ -147,10 +147,11 @@ public static class data
 /// <summary>Таблицы</summary>
 public static class T
 {
-    public static DataBase.ITable User, UType, Podr, PodrPpl, People, Prfssn, PnMean, EdType, OPType, Mark, MError, Sample, SM, SPoint, Adress, PType, SCause, PSG, Period, PMNorm, SMS, SPT, Area, Norm, NType, OLocation, Method/*, VGroup*/, MVolume, OType, Object, SPool, Prt, PrtS, OPT, PSGM, Resp, TResp, SGroup, BackGrd, PaPoS, UTable, VarType, TestCond, TCS;
+    public static DataBase.ITable PlaceSelection, User, UType, Podr, PodrPpl, People, Prfssn, PnMean, EdType, OPType, Mark, MError, Sample, SM, SPoint, Adress, PType, SCause, PSG, Period, PMNorm, SMS, SPT, Area, Norm, NType, OLocation, Method/*, VGroup*/, MVolume, OType, Object, SPool, Prt, PrtS, OPT, PSGM, Resp, TResp, SGroup, BackGrd, PaPoS, UTable, VarType, TestCond, TCS;
 
     public static void Clear()
     {
+        T.PlaceSelection = null;
         T.User = null;
         T.UType = null;
         T.Podr = null;
@@ -201,10 +202,11 @@ public static class T
 /// <summary>Уникальные табличные представления</summary>
 public static class G
 {
-    public static DataBase.ISTable User, UType, Podr, PodrPpl, People, Prfssn, PnMean, EdType, OPType, Mark, MError, Sample, SM, SMMiddle, SPoint, Adress, PType, SCause, PSG, Period, PMNorm, SMS, SPT, Area, Norm, NType, OLocation, Method/*, VGroup*/, MVolume, OType, Object, SPool, Prt, PrtS, OPT, PSGM, Resp, TResp, SGroup, BackGrd, PaPoS, UTable, VarType, TestCond, TCS;
+    public static DataBase.ISTable PlaceSelection, User, UType, Podr, PodrPpl, People, Prfssn, PnMean, EdType, OPType, Mark, MError, Sample, SM, SMMiddle, SPoint, Adress, PType, SCause, PSG, Period, PMNorm, SMS, SPT, Area, Norm, NType, OLocation, Method/*, VGroup*/, MVolume, OType, Object, SPool, Prt, PrtS, OPT, PSGM, Resp, TResp, SGroup, BackGrd, PaPoS, UTable, VarType, TestCond, TCS;
 
     public static void Clear()
     {
+        G.PlaceSelection = null;
         G.User = null;
         G.UType = null;
         G.Podr = null;

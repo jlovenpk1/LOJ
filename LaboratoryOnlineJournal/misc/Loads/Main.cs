@@ -221,7 +221,7 @@ namespace LaboratoryOnlineJournal
             if (!AddSynch(db, Loading, "OType", "Тип объекта", ref T.OType, ref G.OType,   //Object Type
                 newTable =>
                 {
-                    newTable.Columns.AddString("Name", "Наименование", 25);
+                    newTable.Columns.AddString("Name", "Наименование", 255);
 
                     newTable.Columns.Add_Unique(C.OType.Name);
                 }, false)) { return; }
@@ -407,6 +407,17 @@ namespace LaboratoryOnlineJournal
                     newTable.Columns.AddRelation(T.Sample.GetColumn(C.Sample.CYMD));
 
                     newTable.Columns.Add_Unique(C.PrtS.Prt, C.PrtS.Sample);
+                }, false)) { return; }
+
+            if (!AddRemote(db, Loading, "AdressSelection", "Место отбора проб", ref T.PlaceSelection, ref G.PlaceSelection,
+                newTable =>
+                {
+                    newTable.Columns.AddRelation(T.OType.GetColumn(C.OType.Name));
+                    newTable.Columns.AddRelation(T.PType.GetColumn(C.PType.Name));
+                    newTable.Columns.AddRelation(T.Podr.GetColumn(C.Podr.ShrName));
+                    newTable.Columns.AddRelation(T.Object.GetColumn(C.Object.Name));
+
+                    newTable.Columns.AddString("Adress","Адрес",255);
                 }, false)) { return; }
 
             T.PrtS.Add(T.Prt.GetColumn(C.Prt.Number).AlterName, (R) => T.PrtS.Rows.Get<int>(R.ID, C.PrtS.Prt, C.Prt.Number));
