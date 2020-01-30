@@ -172,6 +172,7 @@ namespace LaboratoryOnlineJournal
                     newTable.Columns.Add_Unique("Login");
                 }, false)) { return; }
 
+
             G.User.Rows.SetAddForm(C.User.GetEdit);
             G.User.Rows.SetEditForm(C.User.GetEdit);
 

@@ -147,10 +147,11 @@ public static class data
 /// <summary>Таблицы</summary>
 public static class T
 {
-    public static DataBase.ITable PlaceSelection, User, UType, Podr, PodrPpl, People, Prfssn, PnMean, EdType, OPType, Mark, MError, Sample, SM, SPoint, Adress, PType, SCause, PSG, Period, PMNorm, SMS, SPT, Area, Norm, NType, OLocation, Method/*, VGroup*/, MVolume, OType, Object, SPool, Prt, PrtS, OPT, PSGM, Resp, TResp, SGroup, BackGrd, PaPoS, UTable, VarType, TestCond, TCS;
+    public static DataBase.ITable  PlaceSelection, TestQ, User, UType, Podr, PodrPpl, People, Prfssn, PnMean, EdType, OPType, Mark, MError, Sample, SM, SPoint, Adress, PType, SCause, PSG, Period, PMNorm, SMS, SPT, Area, Norm, NType, OLocation, Method/*, VGroup*/, MVolume, OType, Object, SPool, Prt, PrtS, OPT, PSGM, Resp, TResp, SGroup, BackGrd, PaPoS, UTable, VarType, TestCond, TCS;
 
     public static void Clear()
     {
+        T.TestQ = null;
         T.PlaceSelection = null;
         T.User = null;
         T.UType = null;
@@ -202,10 +203,11 @@ public static class T
 /// <summary>Уникальные табличные представления</summary>
 public static class G
 {
-    public static DataBase.ISTable PlaceSelection, User, UType, Podr, PodrPpl, People, Prfssn, PnMean, EdType, OPType, Mark, MError, Sample, SM, SMMiddle, SPoint, Adress, PType, SCause, PSG, Period, PMNorm, SMS, SPT, Area, Norm, NType, OLocation, Method/*, VGroup*/, MVolume, OType, Object, SPool, Prt, PrtS, OPT, PSGM, Resp, TResp, SGroup, BackGrd, PaPoS, UTable, VarType, TestCond, TCS;
+    public static DataBase.ISTable PlaceSelection, TestQ, User, UType, Podr, PodrPpl, People, Prfssn, PnMean, EdType, OPType, Mark, MError, Sample, SM, SMMiddle, SPoint, Adress, PType, SCause, PSG, Period, PMNorm, SMS, SPT, Area, Norm, NType, OLocation, Method/*, VGroup*/, MVolume, OType, Object, SPool, Prt, PrtS, OPT, PSGM, Resp, TResp, SGroup, BackGrd, PaPoS, UTable, VarType, TestCond, TCS;
 
     public static void Clear()
     {
+        G.TestQ = null;
         G.PlaceSelection = null;
         G.User = null;
         G.UType = null;
@@ -258,6 +260,7 @@ public static class G
 /// <summary>Колонки таблиц</summary>
 public static class C
 {
+ 
     public struct TestCond
     {
         /// <summary>Точка отбора</summary>
@@ -377,6 +380,27 @@ public static class C
     {
         /// <summary>Наиманование</summary>
         public const byte Name = 0;
+    }
+    /// <summary>
+    /// Место отбора и адрес
+    /// </summary>
+    public struct PlaceSelection
+    {
+        /// <summary>Наиманование</summary>
+        public const byte OType = 0;
+        /// <summary>Наиманование</summary>
+        public const byte PType = 1;
+        /// <summary>Наиманование</summary>
+        public const byte Podr = 2;
+        /// <summary>Наиманование</summary>
+        public const byte Object = 3;
+        /// <summary>Наиманование</summary>
+        public const byte Adress = 6; 
+        /// <summary>Наиманование</summary>
+        public const byte PaPoS = 4;
+
+        public const byte Norm = 5;
+        
     }
     public struct SGroup
     {

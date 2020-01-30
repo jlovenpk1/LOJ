@@ -11,6 +11,7 @@ using NPOI.HSSF.UserModel;
 //using NPOI.HPSF;
 using NPOI.POIFS.FileSystem;
 using NPOI.SS.Util;
+using LaboratoryOnlineJournal.Forms.Protokol;
 
 namespace LaboratoryOnlineJournal
 {
@@ -472,25 +473,62 @@ namespace LaboratoryOnlineJournal
                 }
 
                 var DT = Protokol.Date;
+                SelectHuman _shuman = new SelectHuman();
+                Dictionary<string, int> _prtObject = new Dictionary<string, int>(); // Нужно для сверки имя объекта 
+                G.Object.QUERRY().SHOW.DO();
+                int _objC = G.Object.Rows.Count;
+                string _Papos = string.Empty;
+                string _Address = string.Empty;
+                string _objName = string.Empty;
+                string _object = string.Empty;
+                string _norm = string.Empty;
+                int OTypeID = 0;
+                int count = 0;
+                for (int i = 0; i < _objC; i++)
+                {
+                    _prtObject.Add(G.Object.Rows.Get_UnShow<string>(i, C.Object.Name).ToLower(),
+                                   G.Object.Rows.Get_UnShow<int>(i, C.Object.OType)
+                        );
+                    if (Protokol.ProtoType == "Колодец\\Шламонакопитель") { _objName = Protokol.Objects.Remove(Protokol.Objects.IndexOf(',')); }
+                    if (_prtObject.ContainsKey(_objName))
+                    {
+                        OTypeID = _prtObject[_objName];
+                    }
+                    if (OTypeID == 6)
+                    {
+                        G.PlaceSelection.QUERRY().SHOW.
+                                       WHERE.
+                                       C(C.PlaceSelection.OType, OTypeID).AND.
+                                       C(C.PlaceSelection.Object, Protokol.ObjectID).AND.
+                                       C(C.PlaceSelection.Podr, Protokol.PodrID).DO();
+                        count = G.PlaceSelection.Rows.Count;
+                        _Address = G.PlaceSelection.Rows.Get_UnShow<string>(0, C.PlaceSelection.Adress);
+                        _Papos = G.PaPoS.Rows.Get_UnShow<string>(G.PlaceSelection.Rows.Get_UnShow<int>(0, C.PlaceSelection.PaPoS) - 1, C.PaPoS.Name);
+                        _norm = G.Norm.Rows.Get_UnShow<string>(G.PlaceSelection.Rows.Get_UnShow<int>(0, C.PlaceSelection.Norm)-1, C.Norm.Name);
+                    }
+                    
 
+                }
+                _shuman.ShowDialog();
+                if (_object == "") { _object = G.Object.Rows.Get_UnShow<string>(Protokol.ObjectID, C.Object.OType, C.OType.Name); }
                 GetProtokolsExchanges(TitleSheet
                                     , ATMisc.GetDateTimeFromYM(Employe_Form.SPoints.YM).Year
                                     , Protokol.Number.ToString() + "-" + T.Podr.Rows.Get<string>(Protokol.PodrID, C.Podr.ShrName) + " - " + DT.Month.ToString() + "/" + DT.Year.ToString()
-                                    , Protokol.Objects
-                                    , Protokol.Objects
-                                    , Protokol.PTypes
-                                    , Protokol.ObjectsLocations
+                                    , _object.ToLower()
+                                    , _object.ToLower()
+                                    , Protokol.PTypes.ToLower()
+                                    , _Address
                                     , Protokol.DateOstr
                                     , Protokol.DateP
                                     , Protokol.StrTime
-                                    , Protokol.Peoples
+                                    , _probsHuman
                                     , Protokol.Causes
                                     , Protokol.Numbers
                                     , DT.Day.ToString()
                                     , ATMisc.GetMonthName2(DT.Month)
                                     , DT.Month.ToString()
-                                    , RCache.PSG.GetMethodName(Protokol.PodrID)
-                                    , T.PaPoS.Rows.Get<string>(Protokol.PaPoSID, C.PaPoS.Name)
+                                    , _norm
+                                    , _Papos
                                     , T.Podr.Rows.Get<string>(Protokol.PodrID, C.Podr.FllName)
                                     , T.Podr.Rows.Get<string>(Protokol.PodrID, C.Podr.ShrName)
                                     , T.Podr.Rows.Get<string>(Protokol.PodrID, C.Podr.Contact)
@@ -512,6 +550,8 @@ namespace LaboratoryOnlineJournal
                     Exchanges.AddExchange("{ФИО ответственного}", Misc.GetShortFIO(RCache.PSG.GetPeopleID((data.PSG)T.Podr.Rows.Get_UnShow<uint>(Protokol[0].PodrID, C.Podr.PSG))), 5);
                     Exchanges.AddExchange("{Номер протокола}", Protokol.Number.ToString() + "-" + T.Podr.Rows.Get<string>(Protokol.PodrID, C.Podr.ShrName) + " - " + DT.Month.ToString() + "/" + DT.Year.ToString(), 5);
                     Exchanges.AddExchange("{Дата}", DT.ToShortDateString(), 5);
+                    Exchanges.AddExchange("{должность ответственного 2}", _secondSubsPosition, 5);
+                    Exchanges.AddExchange("{ФИО ответственного 2}", _secondSubsPFIO, 5);
 
                     SetResp(Exchanges, Protokol.PodrID, data.TResp.LaboratoryProtokol);
                 }

@@ -162,7 +162,7 @@ namespace LaboratoryOnlineJournal
             if (!AddSynch(db, Loading, "Norm", "Норматив", ref T.Norm, ref G.Norm,
                 newTable =>
                 {
-                    newTable.Columns.AddString("Name", "Наименование", 50);
+                    newTable.Columns.AddString("Name", "Наименование", 255);
                     newTable.Columns.AddDATE("DFrom", "Действует от");
                     newTable.Columns.AddDATE("DTo", "Действует до");
                     newTable.Columns.AddRelation(T.NType.GetColumn(C.NType.Name));
@@ -281,8 +281,7 @@ namespace LaboratoryOnlineJournal
             if (!AddSynch(db, Loading, "PaPoS", "План и место отбора образцов", ref T.PaPoS, ref G.PaPoS, //Plan and place of sampling
                 newTable =>
                 {
-                    newTable.Columns.AddString("Name", "Наименование", 75);
-
+                    newTable.Columns.AddString("Name", "Наименование", 255);
                     newTable.Columns.Add_Unique(C.PaPoS.Name);
                 }, false)) { return; }
 
@@ -408,7 +407,7 @@ namespace LaboratoryOnlineJournal
 
                     newTable.Columns.Add_Unique(C.PrtS.Prt, C.PrtS.Sample);
                 }, false)) { return; }
-
+            
             if (!AddRemote(db, Loading, "AdressSelection", "Место отбора проб", ref T.PlaceSelection, ref G.PlaceSelection,
                 newTable =>
                 {
@@ -416,6 +415,8 @@ namespace LaboratoryOnlineJournal
                     newTable.Columns.AddRelation(T.PType.GetColumn(C.PType.Name));
                     newTable.Columns.AddRelation(T.Podr.GetColumn(C.Podr.ShrName));
                     newTable.Columns.AddRelation(T.Object.GetColumn(C.Object.Name));
+                    newTable.Columns.AddRelation(T.PaPoS.GetColumn(C.PaPoS.Name));
+                    newTable.Columns.AddRelation(T.Norm.GetColumn(C.Norm.Name));
 
                     newTable.Columns.AddString("Adress","Адрес",255);
                 }, false)) { return; }

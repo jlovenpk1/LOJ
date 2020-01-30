@@ -11,11 +11,16 @@ using NPOI.HSSF.UserModel;
 //using NPOI.HPSF;
 using NPOI.POIFS.FileSystem;
 using NPOI.SS.Util;
+using System.Collections;
+using LaboratoryOnlineJournal.Forms.Protokol;
 
 namespace LaboratoryOnlineJournal
 {
     public static partial class Misc
     {
+        public static string _probsHuman = string.Empty;
+        public static string _secondSubsPosition = string.Empty;
+        public static string _secondSubsPFIO = string.Empty;
         public static bool OtchProtokolType1(Protokols_class.SGroup_class.Protokol_class Protokol, bool CreateNew = true, bool Open = true)
         {
             {
@@ -750,24 +755,157 @@ namespace LaboratoryOnlineJournal
 
                 var DT = Protokol.Date;
 
+                SelectHuman _shuman = new SelectHuman();
+                Dictionary<string, int> _prtObject = new Dictionary<string, int>(); // Нужно для сверки имя объекта 
+                // Нужно для Вода сточная, определить где будет осветленная, а где очищенная.
+                Dictionary<int, string> _podrToObject = new Dictionary<int, string>() { { 73,"вода сточная(осветленная, обеззараженная)" }, // ПОСК-2
+                                                                                { 19,"вода сточная(очищенная обеззараженная)" }, // ПОСК-1
+                                                                                { 27,"вода сточная(очищенная обеззараженная)" }, //  СОСК
+                                                                                { 39,"вода сточная(очищенная обеззараженная)" } }; // ЮОСК
+
+                // Нужно для Вода питьевая, определить где будет осветленная, а где очищенная.
+                //Dictionary<int, string> _podrToObject2 = new Dictionary<int, string>() { { 9,"Питьевая вода централизованных систем водоснабжения" }, // ЛОСВ
+                //                                                                { 17,"Питьевая вода централизованных систем водоснабжения" }, // ПОСК-1
+                //                                                                { 18,"Питьевая вода централизованных систем водоснабжения" }, //  СОСК
+                //                                                                { 92,"Питьевая вода централизованных систем водоснабжения" }, //  СОСК
+                //                                                                { 4,"Питьевая вода централизованных систем водоснабжения" }, //  СОСК
+                //                                                                { 9,"Питьевая вода из разводящей сети" }, //  СОСК
+                //                                                                { 17,"Питьевая вода из разводящей сети" }, //  СОСК
+                //                                                                { 18,"Питьевая вода из разводящей сети" }, //  СОСК
+                //                                                                { 4,"Питьевая вода из разводящей сети" }, }; // ЮОСК
+                G.Object.QUERRY().SHOW.DO();
+                int _objC = G.Object.Rows.Count;
+                string _Papos = string.Empty;
+                string _Address = string.Empty;
+                string _objName = string.Empty;
+                string _object = string.Empty;
+                string _norm = string.Empty;
+                int count = 0;
+                for (int i = 0; i < _objC; i++)
+                {
+                    _prtObject.Add(G.Object.Rows.Get_UnShow<string>(i, C.Object.Name).ToLower(),
+                                   G.Object.Rows.Get_UnShow<int>(i, C.Object.OType)
+                        );
+                    _objName = Protokol.Objects;
+                    if (Protokol.ProtoType == "Сводный:природная вода" ||
+                        Protokol.ProtoType == "Сводный:природная вода") { _objName = Protokol.Objects.Remove(Protokol.Objects.IndexOf(',')); }
+                    if (Protokol.ProtoType == "Сводный:вода сточная(промывная), очищеная вода") { _objName = Protokol.Objects.Remove(Protokol.Objects.IndexOf(',')); }
+                    if (Protokol.ProtoType == "Сводный:вода сточная, очищеная вода") { _objName = Protokol.Objects.Remove(Protokol.Objects.IndexOf(',')); }
+                    if (_prtObject.ContainsKey(_objName))
+                    {
+                        int OTypeID = _prtObject[_objName];
+                        switch (OTypeID)
+                        {
+                            case 1:
+
+                                if (OTypeID == 1 && Protokol.Objects == "вода р.волга выше стока, вода р.волга ниже стока" ||
+                                    OTypeID == 1 && Protokol.Objects == "вода р.прямая болда выше стока, вода р.прямая болда ниже стока")
+                                {
+                                    G.PlaceSelection.QUERRY().SHOW.
+                                        WHERE.
+                                        C(C.PlaceSelection.OType, OTypeID).AND.
+                                        C(C.PlaceSelection.Object, Protokol.ObjectID).AND.
+                                        C(C.PlaceSelection.Podr, Protokol.PodrID).DO();
+                                    count = G.PlaceSelection.Rows.Count;
+                                    _Address = G.PlaceSelection.Rows.Get_UnShow<string>(0, C.PlaceSelection.Adress);
+                                    _Papos = G.PaPoS.Rows.Get_UnShow<string>(G.PlaceSelection.Rows.Get_UnShow<int>(0, C.PlaceSelection.PaPoS) - 1, C.PaPoS.Name);
+                                    _norm = G.Norm.Rows.Get_UnShow<string>(G.PlaceSelection.Rows.Get_UnShow<int>(0, C.PlaceSelection.Norm) - 1, C.Norm.Name);
+                                } // 
+
+                                else
+                                {
+
+                                    G.PlaceSelection.QUERRY().SHOW.
+                                       WHERE.
+                                       C(C.PlaceSelection.OType, OTypeID).AND.
+                                       C(C.PlaceSelection.Object, Protokol.ObjectID).AND.
+                                       C(C.PlaceSelection.Podr, Protokol.PodrID).DO();
+                                    count = G.PlaceSelection.Rows.Count;
+                                    _Address = G.PlaceSelection.Rows.Get_UnShow<string>(0, C.PlaceSelection.Adress);
+                                    _Papos = G.PaPoS.Rows.Get_UnShow<string>(G.PlaceSelection.Rows.Get_UnShow<int>(0, C.PlaceSelection.PaPoS) - 1, C.PaPoS.Name);
+                                    _norm = G.Norm.Rows.Get_UnShow<string>(G.PlaceSelection.Rows.Get_UnShow<int>(0, C.PlaceSelection.Norm) - 1, C.Norm.Name);
+                                }
+
+                                break;
+                            case 4:
+                                G.PlaceSelection.QUERRY().SHOW.
+                                  WHERE.C(C.PlaceSelection.OType, OTypeID).AND.
+                                  C(C.PlaceSelection.Podr, Protokol.PodrID).DO();
+                                count = G.PlaceSelection.Rows.Count;
+                                _Address = G.PlaceSelection.Rows.Get_UnShow<string>(0, C.PlaceSelection.Adress);
+                                _Papos = G.PaPoS.Rows.Get_UnShow<string>(G.PlaceSelection.Rows.Get_UnShow<int>(0, C.PlaceSelection.PaPoS) - 1, C.PaPoS.Name);
+                                _norm = G.Norm.Rows.Get_UnShow<string>(G.PlaceSelection.Rows.Get_UnShow<int>(0, C.PlaceSelection.Norm)-1, C.Norm.Name);
+                                if (_podrToObject.ContainsKey(int.Parse(Protokol.PodrID.ToString()))) { _object = _podrToObject[int.Parse(Protokol.PodrID.ToString())]; }
+                                break;
+                            case 6:
+                                G.PlaceSelection.QUERRY().SHOW.
+                                  WHERE.C(C.PlaceSelection.OType, OTypeID).AND.
+                                  C(C.PlaceSelection.Podr, Protokol.PodrID).DO();
+                                count = G.PlaceSelection.Rows.Count;
+                                _Address = G.PlaceSelection.Rows.Get_UnShow<string>(0, C.PlaceSelection.Adress);
+                                _Papos = G.PaPoS.Rows.Get_UnShow<string>(G.PlaceSelection.Rows.Get_UnShow<int>(0, C.PlaceSelection.PaPoS) - 1, C.PaPoS.Name);
+                                _norm = G.Norm.Rows.Get_UnShow<string>(G.PlaceSelection.Rows.Get_UnShow<int>(0, C.PlaceSelection.Norm) - 1, C.Norm.Name);
+                                break;
+                            case 7:
+                                G.PlaceSelection.QUERRY().SHOW.
+                                  WHERE.C(C.PlaceSelection.OType, OTypeID).AND.
+                                  C(C.PlaceSelection.Podr, Protokol.PodrID).DO();
+                                count = G.PlaceSelection.Rows.Count;
+                                _Address = G.PlaceSelection.Rows.Get_UnShow<string>(0, C.PlaceSelection.Adress);
+                                _Papos = G.PaPoS.Rows.Get_UnShow<string>(G.PlaceSelection.Rows.Get_UnShow<int>(0, C.PlaceSelection.PaPoS) - 1, C.PaPoS.Name);
+                                _norm = G.Norm.Rows.Get_UnShow<string>(G.PlaceSelection.Rows.Get_UnShow<int>(0, C.PlaceSelection.Norm) - 1, C.Norm.Name);
+                                break;
+                            case 14:
+                                G.PlaceSelection.QUERRY().SHOW.
+                                  WHERE.C(C.PlaceSelection.OType, OTypeID).AND.
+                                  C(C.PlaceSelection.Podr, Protokol.PodrID).DO();
+                                count = G.PlaceSelection.Rows.Count;
+                                _Address = G.PlaceSelection.Rows.Get_UnShow<string>(0, C.PlaceSelection.Adress);
+                                _Papos = G.PaPoS.Rows.Get_UnShow<string>(G.PlaceSelection.Rows.Get_UnShow<int>(0, C.PlaceSelection.PaPoS) - 1, C.PaPoS.Name);
+                                _norm = G.Norm.Rows.Get_UnShow<string>(G.PlaceSelection.Rows.Get_UnShow<int>(0, C.PlaceSelection.Norm) - 1, C.Norm.Name);
+                                break;
+                            case 15:
+                                G.PlaceSelection.QUERRY().SHOW.
+                                  WHERE.C(C.PlaceSelection.OType, OTypeID).AND.
+                                  C(C.PlaceSelection.Podr, Protokol.PodrID).DO();
+                                count = G.PlaceSelection.Rows.Count;
+                                _Address = G.PlaceSelection.Rows.Get_UnShow<string>(0, C.PlaceSelection.Adress);
+                                _Papos = G.PaPoS.Rows.Get_UnShow<string>(G.PlaceSelection.Rows.Get_UnShow<int>(0, C.PlaceSelection.PaPoS) - 1, C.PaPoS.Name);
+                                _norm = G.Norm.Rows.Get_UnShow<string>(G.PlaceSelection.Rows.Get_UnShow<int>(0, C.PlaceSelection.Norm) - 1, C.Norm.Name);
+                                break;
+
+                            default: break;
+                        }
+                    }
+                    if (_Papos.Length > 3) { break; }
+                }
+                _shuman.ShowDialog();
+
+                 G.OType.QUERRY().SHOW.DO();
+                int _otypeC = G.OType.Rows.Count;
+                G.OType.QUERRY().SHOW.DO();
+                int _otypeCd = G.OType.Rows.Count;
+                var x = Protokol.ObjectID;
+                if (_object == "") { _object = G.Object.Rows.Get_UnShow<string>(Protokol.ObjectID, C.Object.OType, C.OType.Name); }
+
                 GetProtokolsExchanges(TitleSheet
                                     , ATMisc.GetDateTimeFromYM(Protokol.Parent.YM).Year
                                     , Protokol.Number.ToString() + "-" + T.Podr.Rows.Get<string>(Protokol.PodrID, C.Podr.ShrName) + " - " + DT.Month.ToString() + "/" + DT.Year.ToString()
-                                    , Protokol.Objects
-                                    , Protokol.Objects
-                                    , Protokol.PTypes
-                                    , ObjectsLocations
+                                    , _object.ToLower()
+                                    , _object.ToLower()
+                                    , Protokol.PTypes.ToLower()
+                                    , _Address
                                     , DateO
                                     , DateP
                                     , Protokol.StrTime
-                                    , PeopleNames
+                                    , _probsHuman
                                     , Protokol.Causes
                                     , Protokol.Numbers
                                     , DT.Day.ToString()
                                     , ATMisc.GetMonthName2(DT.Month)
                                     , DT.Month.ToString()
-                                    , RCache.PSG.GetMethodName(Protokol.PodrID)
-                                    , T.PaPoS.Rows.Get<string>(Protokol.PaPoSID, C.PaPoS.Name)
+                                    , _norm
+                                    , _Papos
                                     , T.Podr.Rows.Get<string>(Protokol.PodrID, C.Podr.FllName)
                                     , T.Podr.Rows.Get<string>(Protokol.PodrID, C.Podr.ShrName)
                                     , T.Podr.Rows.Get<string>(Protokol.PodrID, C.Podr.Contact)
@@ -788,6 +926,8 @@ namespace LaboratoryOnlineJournal
                     Exchanges.AddExchange("{ФИО ответственного}", Misc.GetShortFIO(RCache.PSG.GetPeopleID((data.PSG)T.Podr.Rows.Get_UnShow<uint>(Protokol[0].PodrID, C.Podr.PSG))), 5);
                     Exchanges.AddExchange("{Номер протокола}", Protokol.Number.ToString() + "-" + T.Podr.Rows.Get<string>(Protokol.PodrID, C.Podr.ShrName) + " - " + DT.Month.ToString() + "/" + DT.Year.ToString(), 5);
                     Exchanges.AddExchange("{Дата}", DT.ToShortDateString(), 5);
+                    Exchanges.AddExchange("{должность ответственного 2}", _secondSubsPosition, 5);
+                    Exchanges.AddExchange("{ФИО ответственного 2}", _secondSubsPFIO, 5);
 
                     SetResp(Exchanges, Protokol.PodrID, data.TResp.LaboratoryProtokol);
                 }
